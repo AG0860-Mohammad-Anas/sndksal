@@ -12,3 +12,4 @@ sentence-transformers
 
 python-dotenv
 pydantic
+langchain-text-splitters

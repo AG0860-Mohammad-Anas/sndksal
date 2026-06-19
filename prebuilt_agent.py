@@ -1,19 +1,36 @@
-# First run: pip install langgraph
-from config import GROQ_API_KEY, GROQ_MODEL
-from langchain_groq import ChatGroq
 from langchain.agents import create_agent
+
+from langchain_groq import ChatGroq
+
+from config import (
+    GROQ_API_KEY,
+    GROQ_MODEL
+)
+
 from tools import agent_tools
 
-llm = ChatGroq(temperature=0, model_name=GROQ_MODEL, groq_api_key=GROQ_API_KEY)
 
-system_prompt = """You are a strict Enterprise Policy Assistant. Your job is to answer employee questions using ONLY the provided tools.
-You MUST search the relevant policies before answering, even if you think you know the answer. 
-RULES:  
-1. Do not invent policy rules. If it is not in the search results, say you don't know.  
-2. ALWAYS cite your sources (File name and chunk ID) in your final answer, no exceptions.  
-3. If the user asks a vague question, ask them to clarify first, before you search.  
-4. Do not guarantee approvals; say it depends on management/finance review if the policy says so.
+llm = ChatGroq(
+    model=GROQ_MODEL,
+    temperature=0,
+    api_key=GROQ_API_KEY
+)
+
+SYSTEM_PROMPT = """
+You are a strict Enterprise Policy Assistant.
+
+Rules:
+
+1. Always use tools before answering.
+2. Never invent policy rules.
+3. If policy information is unavailable, say so.
+4. Always cite source file names and chunk IDs.
+5. Ask clarification questions when needed.
+6. Never guarantee approvals.
 """
 
-# Correct modern construction syntax compiling directly into an executable graph app
-app_graph = create_agent(llm, tools=agent_tools, state_modifier=system_prompt)
+app_graph = create_agent(
+    model=llm,
+    tools=agent_tools,
+    system_prompt=SYSTEM_PROMPT
+)
